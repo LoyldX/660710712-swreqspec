@@ -142,3 +142,18 @@
   - TC-BKG-01-6 เดิม (คนลองทั้งเส้น): ออกจากตารางตามคำสั่งให้แทนที่ด้วย 3 แถวเฉลย
 - แถวของ AC-BKG-02 (TC-BKG-02-1 ถึง 02-4) ไม่ได้แตะ เก็บไว้รอขั้น 8
 - ยังไม่เขียนโค้ด test ในขั้นนี้
+
+---
+
+## 2569-10-07 คำสั่ง: /testcases AC-BKG-01 specs/001-booking/ (ขั้น 4 โหมดเขียน test)
+
+- โหมด: เขียน test เพราะ AC-BKG-01 มีแถว "ใช้ได้" 3 แถว (TC-BKG-01-1 ถึง TC-BKG-01-3) ที่ยังไม่มี test ในโค้ด; T-03 สถานะ "เสร็จ"
+- จำนวน test ก่อนเขียน 4 ตัว หลังเขียน 7 ตัว (เพิ่ม 3 เท่ากับจำนวนแถว) test เดิมทุกตัวยังอยู่ เพิ่มต่อท้ายไฟล์ `backend/tests/test_AC_BKG_01.py` เท่านั้น
+- test ที่เพิ่ม: test_TC_BKG_01_1_last_seat, test_TC_BKG_01_2_no_seat_left, test_TC_BKG_01_3_not_verified
+- ส่วน Then ที่ "(รอ Q-02)" ของ TC-BKG-01-1 ข้อ 3 เป็นคอมเมนต์ ไม่มี assert
+- ผล `cd backend && pytest -v`: 7 passed, 0 failed (TC-BKG-01-1, -2, -3 ผ่านทั้งหมด)
+- ผลต่างจากที่หน้า week07 คาดไว้: หน้า week07 คาดว่า test_TC_BKG_01_2_no_seat_left จะ FAILED (assert 201 == 409) เพราะโค้ดมี `if slot.remaining < 0` แต่โค้ดใน repo นี้เป็น `if slot.remaining <= 0` (backend/app/booking/service.py บรรทัด 26) อยู่แล้ว จึงผ่าน ไม่ต้องแก้โค้ดและไม่ได้แก้โค้ดระบบ ไม่ได้แก้ test ให้ผ่าน
+- ตรวจว่า test จับบั๊กนี้ได้จริง: ชั่วคราวเปลี่ยนเป็น `slot.remaining < 0` แล้วรัน test_TC_BKG_01_2_no_seat_left ล้ม (assert 201 == 409) จากนั้น `git restore` คืนไฟล์
+- ลองพังซ้ำ: ใส่ `#` หน้า `slot.remaining -= 1` แล้วรัน test_TC_BKG_01_1_last_seat ล้ม (assert 1 == 0) ส่วนอีก 6 ตัวผ่าน แปลว่า test แข็งแล้ว จากนั้น `git restore backend/app/booking/service.py` กลับมา 7 passed
+- ตรวจ git status: มีเฉพาะไฟล์ใน backend/tests/ และ prompt-log.md ไม่มีไฟล์ใน app/ ถูกแก้
+- ไม่มีส่วนที่ต้องเดา
