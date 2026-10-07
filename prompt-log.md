@@ -74,3 +74,22 @@
 - หมายเหตุ: TC-BKG-01-2 ใน `test-cases.md` เป็นกรณีหน้าจอ ใช้ API จำลองที่ตอบสำเร็จและตรวจการแสดงหมายเลขคิว ไม่ได้ทดสอบกรณีที่นั่งเต็ม
 - ผล `cd backend && pytest -v`: เริ่มโหลด conftest ไม่สำเร็จ เพราะ environment ไม่มี `fastapi` (`ModuleNotFoundError: No module named 'fastapi'`); ไม่มี test ได้ถูกรัน
 - test ไม่ถูกแก้
+
+---
+
+## 2569-10-07 คำสั่ง: /verify specs/001-booking/
+
+- อ่าน `spec.md`, `plan.md`, `tasks.md`, `test-cases.md`, `AGENTS.md` และโค้ดทุกไฟล์ใน `backend/app/`, `frontend/src/`, `backend/tests/`, `frontend/src/__tests__/`
+- ผล test: backend รันไม่ได้เพราะไม่พบคำสั่ง `pytest`; frontend รันไม่ได้เพราะไม่พบคำสั่ง `vitest`; จึงไม่มี test ผ่านหรือไม่ผ่านจากการรันครั้งนี้
+- สร้าง `specs/001-booking/rtm.md` โดยไม่แก้โค้ด, test, spec, plan หรือ tasks
+- RTM: ครบ 0, ยังไม่ถึง 3, รอ 0, ช่องโหว่ 12; ข้อค้นพบใหม่ F-01 ถึง F-11
+
+---
+
+## 2569-10-07 คำสั่ง: /testcases AC-BKG-02 specs/001-booking/
+
+- โหมด: ร่าง เพราะ `test-cases.md` ยังไม่มีแถวของ AC-BKG-02 และ T-04 มีสถานะ “พร้อมทำ”
+- เพิ่ม test case สถานะ “ร่าง” 4 แถว: TC-BKG-02-1 ถึง TC-BKG-02-4
+- ครอบคลุมทางปกติ, ขอบเขตวันเดียวกัน, กรณีมีที่นั่งแต่ถูกกันจองซ้ำ และทางผิดที่คิวเดิมถูกใช้แล้ว
+- กรณีคิวเดิมถูกใช้แล้ว: spec ไม่ได้บอกผลลัพธ์ที่คาดหวัง จึงยังไม่กำหนด assert
+- ยังไม่เขียนโค้ด test และยังไม่รัน test; รอทีมตรวจแถวและเปลี่ยนสถานะเป็น “ใช้ได้”
