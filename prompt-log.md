@@ -157,3 +157,35 @@
 - ลองพังซ้ำ: ใส่ `#` หน้า `slot.remaining -= 1` แล้วรัน test_TC_BKG_01_1_last_seat ล้ม (assert 1 == 0) ส่วนอีก 6 ตัวผ่าน แปลว่า test แข็งแล้ว จากนั้น `git restore backend/app/booking/service.py` กลับมา 7 passed
 - ตรวจ git status: มีเฉพาะไฟล์ใน backend/tests/ และ prompt-log.md ไม่มีไฟล์ใน app/ ถูกแก้
 - ไม่มีส่วนที่ต้องเดา
+
+---
+
+## 2569-10-07 คำสั่ง: /verify specs/001-booking/ (ขั้น 5)
+
+- อ่าน spec.md, plan.md, tasks.md, test-cases.md, rtm.md เดิม, AGENTS.md และโค้ดทุกไฟล์ใน backend/app/, backend/tests/, frontend/src/ (frontend มีแต่โครงเริ่มต้น และ setup.test.jsx)
+- ผล test: backend 7 passed 0 failed; frontend ไม่ได้รัน (ไม่มี test หน้าจอนอกจาก setup และไม่ได้ติดตั้ง node_modules)
+- rtm.md เดิมมีอยู่แล้ว (F-01 ถึง F-11, ช่อง "ทีมตัดสิน" ว่างทั้งหมด) จึงคง F-ID เดิมทั้งหมด และเขียนทับตารางตามรอยด้วยข้อมูลล่าสุด
+- ตารางไปข้างหน้า 15 แถว: ครบ 1 (IF-IDP-01), ยังไม่ถึง 7, รอ Q-xx 0, ช่องโหว่ 7
+- F-06 (test อ่อน test_AC_BKG_01) ย้ายไปหัวข้อ 4 "แก้แล้ว" เพราะมี test_TC_BKG_01_* ตรวจ Then ครบแล้ว และลองพังซ้ำแล้ว test ล้ม
+- ข้อค้นพบใหม่: F-12 (FR-BKG-01 มีแต่ AC-BKG-05 ที่ตรวจแค่ความเร็ว ไม่ใช่ AC ที่ตรวจการแสดง 30 วัน); เปลี่ยนชนิดของ F-09 จาก "โค้ดไม่มี FR" เป็น "อ้าง ID ผิดเรื่อง" (โค้ดอ้าง FR-BKG-04 แต่เรื่องยกเลิกอยู่ใน Out of scope)
+- ไม่ได้แก้โค้ด test spec plan หรือ tasks
+
+---
+
+## 2569-10-07 ขั้น 6 ของ workshop week07: อ่านโค้ดด้วยสายตา RE 5 คำถาม และเขียนช่อง "ทีมตัดสิน" ใน rtm.md
+
+- รัน grep 5 คำถามใน backend/ ผลสำคัญ:
+  - คำถาม 1 (@router): พบ POST /bookings, DELETE /bookings/{booking_id}, GET /slots; เทียบ plan ข้อ 4 และ Out of scope พบ DELETE เป็นของแถม (UC-02) -> F-09 (booking/router.py:35, service.py:42-50)
+  - คำถาม 2 (ตัวเลข): slots/service.py:10 `DAYS_AHEAD = 14` ไม่ตรง "30 วัน" ใน FR-BKG-01 -> F-04; booking/service.py:26 เป็น `<= 0` ถูกต้องแล้ว (ไม่มีบั๊ก `< 0` ใน repo นี้)
+  - คำถาม 3 (queue): booking/service.py:13-18 `next_queue_no` ออกเลข `A001` รายวัน ทั้งที่ Q-02 ยังไม่มีคำตอบ -> F-03
+  - คำถาม 4 (national_id/logger/print): booking/router.py:19 รับ `national_id` และ :25 เขียนลง log -> F-01
+  - คำถาม 5 (FR-): คอมเมนต์ "(FR-BKG-04)" ของ cancel_booking (router.py:37, service.py:43) อ้างผิดเรื่อง FR-BKG-04 คือยืนยันการจอง ไม่ใช่ยกเลิก -> F-09
+- ธงแดงใน prompt-log.md: พบ "เพื่อความสมบูรณ์ของระบบ" ในรายงาน T-03 ตรงกับ DELETE /bookings/{id}
+- จุดที่หาเจอ 6 จุดจากเป้าหมาย: (1) test อ่อน test_AC_BKG_01 (F-06) (2) เงื่อนไขที่นั่ง `< 0` -> ใน repo นี้เป็น `<= 0` อยู่แล้ว (ไม่มีจุดนี้ให้แก้) (3) DELETE /bookings/{id} (F-09) (4) DAYS_AHEAD 14 (F-04) (5) queue_no A001 (F-03) (6) national_id ใน request/log (F-01)
+- การตัดสินช่อง "ทีมตัดสิน" ทำตามเฉลยและคำใบ้ของผู้สอนในหน้า week07 (ขั้น 7 "จะเห็น (ครบ 4 ข้อ)" และตัวอย่าง Q-03 Q-04) ไม่ใช่การตัดสินของทีมเอง:
+  - F-09, F-04, F-03 = แก้โค้ด
+  - F-01 = เพิ่ม Q-03 (และระหว่างรอ เอา national_id ออกจาก request/log ตามกฎ "ระหว่างรอ เอาส่วนที่เดาออก")
+  - F-05, F-12 = เพิ่ม Q-04
+  - F-02, F-10 = ไม่ใช่ปัญหา: ยังไม่ถึง T-07 และ T-08 ตามกฎ 3 กอง (task สถานะ "พร้อมทำ")
+  - F-07, F-08, F-11 = เว้นว่าง เฉลยไม่ครอบคลุม ไม่ได้เดาแทนทีม
+- ยังไม่ได้แก้โค้ดในขั้นนี้ (ขั้น 7 จะแก้ทีละข้อ)

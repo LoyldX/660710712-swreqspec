@@ -1,59 +1,63 @@
 # RTM: จองคิวตรวจสุขภาพ (Booking)
 อ้างอิง: spec.md SPEC-BKG-001 Draft v2 | plan.md | tasks.md | test-cases.md
-สร้างด้วย `/verify specs/001-booking/` เมื่อ 2569-10-07 | test: 0 ผ่าน 0 ไม่ผ่าน (backend/frontend รันไม่ได้ เพราะไม่พบ `pytest` และ `vitest`)
+สร้างด้วย `/verify specs/001-booking/` เมื่อ 2569-10-07 (รอบที่ 2 ต่อจาก rtm เดิม; รอบนี้ verify v1 หลังเพิ่ม test_TC_BKG_01_*) | test: backend 7 ผ่าน 0 ไม่ผ่าน (frontend ไม่ได้รัน: ยังไม่มี test หน้าจอนอกจาก setup.test.jsx และไม่ได้ติดตั้ง node_modules)
 
 ## 1. ตามรอยไปข้างหน้า (requirement ไป โค้ด ไป test)
 | ID | AC | task | โค้ด (ไฟล์: ฟังก์ชัน) | test (ผล) | สถานะ |
 |---|---|---|---|---|---|
-| FR-BKG-01 | AC-BKG-05 | T-02 เสร็จ | `backend/app/slots/service.py:list_available_slots`, `backend/app/slots/router.py:get_slots` | `test_AC_BKG_05` (ไม่ได้รัน; ทดสอบเฉพาะ status และ p95 ของการเรียกแบบลำดับ) | ช่องโหว่ |
-| FR-BKG-02 | AC-BKG-02 | T-04 พร้อมทำ | ไม่มีโค้ด | ไม่มี | ยังไม่ถึง |
-| FR-BKG-03 | AC-BKG-03 | T-05, T-11, T-12 พร้อมทำ | ไม่มีโค้ด | ไม่มี | ยังไม่ถึง |
-| FR-BKG-04 | AC-BKG-01 | T-03 เสร็จ; T-06 รอ Q-02; T-07 พร้อมทำ | `backend/app/booking/service.py:create_booking`, `backend/app/booking/router.py:create_booking` | `test_AC_BKG_01` (ไม่ได้รัน; assert เฉพาะ HTTP 201) | ช่องโหว่ |
-| FR-BKG-05 | AC-BKG-04 | T-07 พร้อมทำ | ไม่มีโค้ด | ไม่มี | ช่องโหว่ |
-| FR-BKG-06 | ไม่มี AC | T-02 เสร็จ; T-10, T-12 พร้อมทำ | `backend/app/slots/service.py:list_available_slots` กรอง `package_code`; ยังไม่มีหน้าจอ | ไม่มี | ช่องโหว่ |
-| NFR-PERF-01 | AC-BKG-05 | T-02 เสร็จ | `backend/app/slots/router.py:get_slots` | `test_AC_BKG_05` (ไม่ได้รัน; ไม่ใช่ผู้ใช้พร้อมกัน 200 คน) | ช่องโหว่ |
-| NFR-SEC-01 | ไม่มี AC ตรง ๆ | ไม่มี task | ไม่มีการตั้งค่า TLS ในโค้ดที่ตรวจ | ไม่มี | ช่องโหว่ |
-| NFR-REL-02 | AC-BKG-04 | T-07 พร้อมทำ | ไม่มีโค้ด | ไม่มี | ช่องโหว่ |
+| FR-BKG-01 | AC-BKG-05 (ตรวจแค่ความเร็ว ไม่ตรวจ "แสดง 30 วัน") | T-02 เสร็จ; T-10, T-12 พร้อมทำ | `backend/app/slots/service.py:list_available_slots`, `backend/app/slots/router.py:get_slots` | `test_AC_BKG_05` (ผ่าน; ไม่ตรวจช่วงวัน) | ช่องโหว่ (F-04, F-12) |
+| FR-BKG-02 | AC-BKG-02 | T-04 พร้อมทำ | ไม่มีโค้ด | ไม่มี test (test-cases TC-BKG-02-1 ถึง 02-4 ยังเป็น "ร่าง") | ยังไม่ถึง |
+| FR-BKG-03 | AC-BKG-03 | T-05, T-11, T-12 พร้อมทำ | ยังไม่มีการเสนอ 3 ช่วงใกล้เคียง (`create_booking` ตอบ 409 เมื่อเต็มแล้ว) | `test_TC_BKG_01_2_no_seat_left` ผ่าน (ตรวจเฉพาะ 409 / ไม่มีการจอง / ที่นั่งไม่ติดลบ) | ยังไม่ถึง |
+| FR-BKG-04 | AC-BKG-01 | T-03 เสร็จ; T-06 รอ Q-02; T-07 พร้อมทำ | `backend/app/booking/service.py:create_booking`, `backend/app/booking/router.py:create_booking` | `test_AC_BKG_01` (ผ่าน แต่อ่อน), `test_TC_BKG_01_1_last_seat` ผ่าน, `test_TC_BKG_01_2_no_seat_left` ผ่าน, `test_TC_BKG_01_3_not_verified` ผ่าน (Then ส่วนหมายเลขคิว รอ Q-02 ไม่ได้ assert) | ช่องโหว่ (F-01, F-03, F-09) |
+| FR-BKG-05 | AC-BKG-04 | T-07 พร้อมทำ | ไม่มีโค้ด | ไม่มี | ยังไม่ถึง |
+| FR-BKG-06 | ไม่มี AC | T-02 เสร็จ; T-10, T-12 พร้อมทำ | `backend/app/slots/service.py:list_available_slots` กรอง `package_code`; ยังไม่มีหน้าจอ | ไม่มี | ช่องโหว่ (F-05) |
+| NFR-PERF-01 | AC-BKG-05 | T-02 เสร็จ | `backend/app/slots/router.py:get_slots` | `test_AC_BKG_05` (ผ่าน; เรียกแบบลำดับ ไม่ใช่ผู้ใช้พร้อมกัน 200 คน) | ช่องโหว่ (F-07) |
+| NFR-SEC-01 | ไม่มี AC ตรง ๆ | ไม่มี task | ไม่มีการตั้งค่า TLS ในโค้ดที่ตรวจ | ไม่มี | ช่องโหว่ (F-11) |
+| NFR-REL-02 | AC-BKG-04 | T-07 พร้อมทำ | ไม่มีโค้ด | ไม่มี | ยังไม่ถึง |
 | NFR-USE-01 | ไม่มี AC ตรง ๆ | ไม่มี task | ไม่มีโค้ดหรือการทดสอบ usability | ไม่มี | ยังไม่ถึง |
-| CON-TECH-01 | ไม่มี AC ตรง ๆ | T-01 เสร็จ | `backend/app/config.py`, `backend/app/db/session.py` | `test_T01_tables_created` (ไม่ได้รัน; ใช้ SQLite) | ช่องโหว่ |
-| DOM-PDPA-01 | AC-BKG-06 | T-01 เสร็จ; T-08 พร้อมทำ | มีตาราง `audit_logs` ใน `backend/app/db/models.py` แต่ไม่มีการเขียน audit log | ไม่มี | ช่องโหว่ |
-| IF-IDP-01 | ไม่มี AC ตรง ๆ | T-03 เสร็จ | `backend/app/auth/idp.py:get_verified_hn` และ dependency ของ `POST /bookings` | ไม่มี test เฉพาะ constraint | ช่องโหว่ |
-| IF-HIS-01 | ไม่มี AC ตรง ๆ | T-01 เสร็จ; T-09 พร้อมทำ | ไม่มี HIS lookup; `BookingRequest` รับ `national_id` และ router log ค่า | `test_T01_no_national_id` (ไม่ได้รัน; ตรวจเฉพาะ schema) | ช่องโหว่ |
-| IF-NOT-01 | AC-BKG-04 | T-07 พร้อมทำ | ไม่มีโค้ดคิวส่งข้อความ | ไม่มี | ช่องโหว่ |
+| CON-TECH-01 | ไม่มี AC ตรง ๆ | T-01 เสร็จ | `backend/app/config.py`, `backend/app/db/session.py` | `test_T01_tables_created` (ผ่าน; ใช้ SQLite) | ช่องโหว่ (F-08) |
+| DOM-PDPA-01 | AC-BKG-06 | T-01 เสร็จ; T-08 พร้อมทำ | มีตาราง `audit_logs` ใน `backend/app/db/models.py` แต่ยังไม่มีการเขียน audit log | ไม่มี | ยังไม่ถึง (F-10) |
+| IF-IDP-01 | ไม่มี AC ตรง ๆ | T-03 เสร็จ | `backend/app/auth/idp.py:get_verified_hn` และ dependency ของ `POST /bookings` | `test_TC_BKG_01_3_not_verified` (ผ่าน: ไม่ยืนยันตัวตนได้ 401 ไม่มีการจอง ที่นั่งไม่ถูกตัด) | ครบ |
+| IF-HIS-01 | ไม่มี AC ตรง ๆ | T-01 เสร็จ; T-09 พร้อมทำ | ไม่มี HIS lookup; `BookingRequest` รับ `national_id` และ router log ค่า | `test_T01_no_national_id` (ผ่าน; ตรวจเฉพาะ schema) | ช่องโหว่ (F-01) |
+| IF-NOT-01 | AC-BKG-04 | T-07 พร้อมทำ | ไม่มีโค้ดคิวส่งข้อความ | ไม่มี | ยังไม่ถึง (F-02) |
+
+สรุปแถว: ครบ 1, ยังไม่ถึง 7, รอ Q-xx 0 (ส่วนหมายเลขคิวของ FR-BKG-04 รอ Q-02 แต่ทั้งแถวยังเป็นช่องโหว่), ช่องโหว่ 7 (รวม 15 แถว)
 
 ## 2. ตามรอยย้อนกลับ (โค้ด ไป requirement)
 | โค้ด (ไฟล์: ฟังก์ชัน หรือ endpoint) | อ้าง ID | ตรงกับข้อความใน spec ไหม | หมายเหตุ |
 |---|---|---|---|
 | `backend/app/slots/router.py:get_slots` (`GET /slots`) | FR-BKG-01, FR-BKG-06 | บางส่วน | คืนช่วงที่ `remaining > 0` และกรองแพ็กเกจได้ แต่ช่วงวันที่ถูกกำหนด 14 วัน และยังไม่มีหน้าจอ |
-| `backend/app/slots/service.py:list_available_slots` | FR-BKG-01, FR-BKG-06 | ไม่ตรงทั้งหมด | `DAYS_AHEAD = 14` ไม่ใช่ 30 วัน |
-| `backend/app/booking/router.py:create_booking` (`POST /bookings`) | FR-BKG-04, IF-IDP-01 | ไม่ตรงทั้งหมด | จองได้หลังตรวจ header แบบจำลอง แต่ไม่วางคำขอส่งข้อความ และรับ/log `national_id` |
-| `backend/app/booking/service.py:create_booking` | FR-BKG-04, Q-02 | ไม่ตรง | สร้างเลขรูปแบบ `A001` และรีเซ็ตตามวัน ทั้งที่ Q-02 ยังไม่มีคำตอบ |
-| `backend/app/booking/service.py:next_queue_no` | Q-02 | ไม่ควรมีการตัดสินใจนี้ | เป็นการเลือกทั้งรูปแบบและวิธีนับเลขแทนคำตอบของ Q-02 |
-| `backend/app/booking/router.py:cancel_booking` (`DELETE /bookings/{booking_id}`) | ไม่มี; UC-02 | ไม่ตรง | เป็นความสามารถยกเลิกคิว ซึ่งอยู่ใน Out of scope |
-| `backend/app/auth/idp.py:get_verified_hn` | IF-IDP-01 | ยังพิสูจน์ไม่ครบ | ตรวจเฉพาะรูปแบบ header จำลอง ยังไม่มี test ที่ยืนยันการปฏิเสธก่อนเข้าถึงข้อมูล |
-| `backend/app/config.py`, `backend/app/db/session.py` | CON-TECH-01 | ไม่รับประกัน | ค่าเริ่มต้นเป็น SQLite จึงไม่ได้บังคับ PostgreSQL ตาม constraint หากไม่ตั้ง `DATABASE_URL` |
-| `backend/app/db/models.py:Booking` | IF-HIS-01 | บางส่วน | ตารางไม่มี `national_id` และเก็บ HN แต่ request/log ยังรับและเขียนเลขบัตรประชาชน |
-| `frontend/src/App.jsx` | FR-BKG-01, FR-BKG-03, FR-BKG-04, FR-BKG-05, FR-BKG-06 | ยังไม่ตรง | เป็นเพียงโครงหน้าจอ ไม่มี flow จองคิวหรือแสดงผลตาม requirements |
+| `backend/app/slots/service.py:list_available_slots` | FR-BKG-01, FR-BKG-06 | ไม่ตรงทั้งหมด | `DAYS_AHEAD = 14` ไม่ใช่ 30 วัน (F-04) |
+| `backend/app/booking/router.py:create_booking` (`POST /bookings`) | FR-BKG-04, IF-IDP-01 | ไม่ตรงทั้งหมด | จองได้หลังตรวจ header แบบจำลอง; รับ `national_id` และเขียนลง log (F-01); ยังไม่วางคำขอส่งข้อความ (F-02 ยังไม่ถึง T-07) |
+| `backend/app/booking/service.py:create_booking` | FR-BKG-04, FR-BKG-03 | ตรง | ปฏิเสธเมื่อ `slot.remaining <= 0` ตัดที่นั่งเมื่อสำเร็จ (ยืนยันด้วย test_TC_BKG_01_1/2) |
+| `backend/app/booking/service.py:next_queue_no` | Q-02 | ไม่ควรมีการตัดสินใจนี้ | เลือกทั้งรูปแบบ `A001` และวิธีนับรายวัน แทนคำตอบของ Q-02 (F-03) |
+| `backend/app/booking/router.py:cancel_booking` (`DELETE /bookings/{booking_id}`) และ `service.py:cancel_booking` | โค้ดอ้าง FR-BKG-04; ที่จริงคือ UC-02 | ไม่ตรง | FR-BKG-04 พูดเรื่องยืนยันการจอง ไม่ใช่ยกเลิก การยกเลิกอยู่ใน Out of scope (UC-02) (F-09) |
+| `backend/app/auth/idp.py:get_verified_hn` | IF-IDP-01 | ตรง (ตามที่จำลอง) | ปฏิเสธ 401 เมื่อไม่มี token รูปแบบที่กำหนด ยืนยันด้วย test_TC_BKG_01_3_not_verified |
+| `backend/app/config.py`, `backend/app/db/session.py` | CON-TECH-01 | ไม่รับประกัน | ค่าเริ่มต้นเป็น SQLite จึงไม่ได้บังคับ PostgreSQL หากไม่ตั้ง `DATABASE_URL` (F-08) |
+| `backend/app/db/models.py:Booking` | IF-HIS-01 | บางส่วน | ตารางไม่มี `national_id` และเก็บ HN แต่ request/log ยังรับและเขียนเลขบัตรประชาชน (F-01) |
+| `backend/app/db/models.py:AuditLog` | DOM-PDPA-01 | ตรง (เฉพาะตาราง) | ยังไม่มีโค้ดเขียน audit log (ยังไม่ถึง T-08) |
+| `frontend/src/App.jsx`, `frontend/src/api/client.js` | FR-BKG-01, FR-BKG-03, FR-BKG-04 | ยังไม่ตรง | เป็นโครงหน้าจอและตัวเรียก API ที่รายวิชาให้มา ยังไม่มี flow จองคิว |
 
 ## 3. ข้อค้นพบ
 ชนิด: AC ไม่มี test / test อ่อน / โค้ดไม่มี FR / FR ไม่มี AC / เดา Q-xx / ละเมิด Constraint / ตัวเลขไม่ตรง spec / อ้าง ID ผิดเรื่อง
-ทีมตัดสิน: เว้นว่างให้ทีมตัดสิน
+ทีมตัดสิน: แก้โค้ด / แก้ spec / เพิ่ม Q-xx / ไม่ใช่ปัญหา (พร้อมเหตุผล 1 บรรทัด)
+หมายเหตุ: ช่อง "ทีมตัดสิน" ที่กรอกไว้ ตัดสินตามเฉลยและคำใบ้ของผู้สอนในหน้า week07 (ไม่ใช่การตัดสินของ AI เอง) ช่องที่เฉลยไม่ครอบคลุมเว้นว่างไว้
 
 | F-ID | ชนิด | อยู่ที่ | ขัดกับ | รายละเอียด | ทีมตัดสิน |
 |---|---|---|---|---|---|
-| F-01 | ละเมิด Constraint | `backend/app/booking/router.py:BookingRequest`, `create_booking` | IF-HIS-01 | รับ `national_id` ใน request และเขียนลง log ทั้งที่ต้องค้นจาก HIS แล้วอ้างอิงด้วย HN และไม่เก็บเลขบัตรประชาชนในบริบทการจอง; ยังไม่มี `/patients/lookup` | |
-| F-02 | โค้ดไม่มี FR | `backend/app/booking/router.py:create_booking` | FR-BKG-04, IF-NOT-01 | เมื่อจองสำเร็จไม่มีการวางคำขอส่งข้อความยืนยันแบบ asynchronous | |
-| F-03 | เดา Q-02 | `backend/app/booking/service.py:next_queue_no` | Q-02, FR-BKG-04 | โค้ดเลือก `A001` และนับใหม่ทุกวัน ทั้งที่รูปแบบและวิธีนับหมายเลขคิวยังรอคำตอบ | |
-| F-04 | ตัวเลขไม่ตรง spec | `backend/app/slots/service.py:DAYS_AHEAD` | FR-BKG-01 | ใช้ 14 วันแทน “ภายใน 30 วันข้างหน้า” | |
-| F-05 | FR ไม่มี AC | `spec.md` และการทำงาน FR-BKG-06 | FR-BKG-06 | FR-BKG-06 ไม่มี AC ที่ตรวจการเปลี่ยนแพ็กเกจแล้วคำนวณช่วงเวลาว่างใหม่; โค้ดที่มีเป็นเพียงตัวกรอง API และยังไม่มีหน้าจอ | |
-| F-06 | test อ่อน | `backend/tests/test_AC_BKG_01.py:test_AC_BKG_01` | AC-BKG-01 | assert เฉพาะ status 201 ไม่ตรวจ booking id, รายการในฐานข้อมูล, queue_no หรือ remaining ตาม Then | |
+| F-01 | ละเมิด Constraint | `backend/app/booking/router.py:BookingRequest`, `create_booking` | IF-HIS-01 | รับ `national_id` ใน request และเขียนลง log (บรรทัด 19 และ 25) ทั้งที่ต้องค้นจาก HIS แล้วอ้างอิงด้วย HN และไม่เก็บเลขบัตรประชาชนในบริบทการจอง; ยังไม่มี `/patients/lookup` | เพิ่ม Q-03: IF-HIS-01 ระบุแค่ "ไม่เก็บในตารางการจอง" ไม่ได้พูดถึง log ต้องถามฝ่าย IT; ระหว่างรอ เอา national_id ออกจาก request และ log (ส่วนที่เดา) |
+| F-02 | โค้ดไม่มี FR | `backend/app/booking/router.py:create_booking` | FR-BKG-04, IF-NOT-01 | เมื่อจองสำเร็จไม่มีการวางคำขอส่งข้อความยืนยันแบบ asynchronous | ไม่ใช่ปัญหา: ยังไม่ถึง T-07 (สถานะ "พร้อมทำ") |
+| F-03 | เดา Q-02 | `backend/app/booking/service.py:next_queue_no` | Q-02, FR-BKG-04 | โค้ดเลือก `A001` และนับใหม่ทุกวัน ทั้งที่รูปแบบและวิธีนับหมายเลขคิวยังรอคำตอบ | แก้โค้ด: ให้ queue_no เป็นค่าว่างพร้อมคอมเมนต์ "รอ Q-02" เลิกออกเลข A001 (plan ข้อ 3 ให้ queue_no ว่างได้) |
+| F-04 | ตัวเลขไม่ตรง spec | `backend/app/slots/service.py:DAYS_AHEAD` | FR-BKG-01 | ใช้ 14 วันแทน "ภายใน 30 วันข้างหน้า" | แก้โค้ด: spec พูดชัดว่า 30 วัน ให้ DAYS_AHEAD เป็น 30 |
+| F-05 | FR ไม่มี AC | `spec.md` และการทำงาน FR-BKG-06 | FR-BKG-06 | FR-BKG-06 ไม่มี AC ที่ตรวจการเปลี่ยนแพ็กเกจแล้วคำนวณช่วงเวลาว่างใหม่; โค้ดที่มีเป็นเพียงตัวกรอง API และยังไม่มีหน้าจอ | เพิ่ม Q-04: FR-BKG-06 ควรมีเกณฑ์ยอมรับอย่างไร (ยังไม่เขียน AC ใหม่จนกว่าผู้ใช้ยืนยัน) |
 | F-07 | test อ่อน | `backend/tests/test_AC_BKG_05.py:test_AC_BKG_05` | AC-BKG-05, NFR-PERF-01 | เรียกแบบลำดับ ไม่ใช่ผู้ใช้พร้อมกัน 200 คน จึงไม่พิสูจน์ p95 ภายใต้ concurrency ตาม requirement | |
 | F-08 | ละเมิด Constraint | `backend/app/config.py:DATABASE_URL` | CON-TECH-01 | ค่าเริ่มต้นเป็น SQLite ไม่ใช่ PostgreSQL และไม่มีการบังคับว่าระบบจริงต้องใช้ PostgreSQL | |
-| F-09 | โค้ดไม่มี FR | `backend/app/booking/router.py:cancel_booking` | Out of scope (UC-02) | เพิ่ม `DELETE /bookings/{id}` สำหรับยกเลิก/คืนที่นั่ง ทั้งที่การยกเลิกและเลื่อนคิวอยู่นอกขอบเขต | |
-| F-10 | โค้ดไม่มี FR | ระบบ audit และหน้าดูข้อมูลการจอง | DOM-PDPA-01, AC-BKG-06 | มีเพียงโมเดล `audit_logs`; ไม่มี middleware/endpoint ที่บันทึกผู้เข้าถึง เวลา และรหัสผู้รับบริการทุกครั้งที่เข้าถึงข้อมูล | |
-| F-11 | โค้ดไม่มี FR | `backend/app` และ `frontend/src` | NFR-SEC-01, NFR-REL-02, FR-BKG-05 | ไม่พบ TLS 1.2+, คิวส่งซ้ำภายใน 5 นาที หรือการส่งข้อความซ้ำ/ค้างส่ง | |
+| F-09 | อ้าง ID ผิดเรื่อง | `backend/app/booking/router.py:cancel_booking`, `backend/app/booking/service.py:cancel_booking` | Out of scope (UC-02), FR-BKG-04 | เพิ่ม `DELETE /bookings/{id}` สำหรับยกเลิก/คืนที่นั่ง โดยอ้าง FR-BKG-04 แต่ FR-BKG-04 พูดเรื่องยืนยันการจอง การยกเลิกและเลื่อนคิวอยู่ใน Out of scope (ไม่ใช่การตัดสินใจของทีม) | แก้โค้ด: ของแถม อยู่ใน Out of scope (UC-02) ลบ endpoint และ cancel_booking ออก |
+| F-10 | โค้ดไม่มี FR | ระบบ audit และหน้าดูข้อมูลการจอง | DOM-PDPA-01, AC-BKG-06 | มีเพียงโมเดล `audit_logs`; ไม่มี middleware/endpoint ที่บันทึกผู้เข้าถึง เวลา และรหัสผู้รับบริการทุกครั้งที่เข้าถึงข้อมูล | ไม่ใช่ปัญหา: ยังไม่ถึง T-08 (สถานะ "พร้อมทำ") |
+| F-11 | โค้ดไม่มี FR | `backend/app` และ `frontend/src` | NFR-SEC-01, NFR-REL-02, FR-BKG-05 | ไม่พบ TLS 1.2+, คิวส่งซ้ำภายใน 5 นาที หรือการส่งข้อความซ้ำ/ค้างส่ง (ส่วนคิวส่งซ้ำเป็นงานของ T-07; NFR-SEC-01 ไม่มี task รองรับใน tasks.md) | |
+| F-12 | FR ไม่มี AC | `spec.md` และการทำงาน FR-BKG-01 | FR-BKG-01 | FR-BKG-01 (แสดงช่วงเวลาว่าง 30 วัน พร้อมที่นั่งคงเหลือ) มีแต่ AC-BKG-05 ซึ่งตรวจแค่ความเร็ว ไม่มี AC ที่ตรวจว่าแสดงครบ 30 วัน (ข้อค้นพบใหม่ในรอบนี้) | เพิ่ม Q-04: FR-BKG-01 ควรมีเกณฑ์ยอมรับอย่างไร (ยังไม่เขียน AC ใหม่จนกว่าผู้ใช้ยืนยัน) |
 
 ## 4. แก้แล้ว
 | F-ID | แก้อย่างไร | รู้ได้อย่างไร |
 |---|---|---|
-| - | ไม่มีข้อค้นพบเดิมให้ตรวจย้าย | ไม่พบ `rtm.md` เดิม |
+| F-06 | เพิ่ม test_TC_BKG_01_1_last_seat, test_TC_BKG_01_2_no_seat_left, test_TC_BKG_01_3_not_verified ต่อท้าย `backend/tests/test_AC_BKG_01.py` (test เดิม `test_AC_BKG_01` ยังอยู่ ไม่ได้แก้) ตรวจ Then ครบ (ยกเว้นหมายเลขคิว รอ Q-02) | ลองพังซ้ำ: ใส่ `#` หน้า `slot.remaining -= 1` แล้ว test_TC_BKG_01_1_last_seat ล้ม (assert 1 == 0); ปกติ 7 passed (ทีมตัดสิน: แก้ test ด้วยแถว test-cases ที่ใช้ได้ ตามเฉลยผู้สอนขั้น 3 และ 4) |
