@@ -189,3 +189,13 @@
   - F-02, F-10 = ไม่ใช่ปัญหา: ยังไม่ถึง T-07 และ T-08 ตามกฎ 3 กอง (task สถานะ "พร้อมทำ")
   - F-07, F-08, F-11 = เว้นว่าง เฉลยไม่ครอบคลุม ไม่ได้เดาแทนทีม
 - ยังไม่ได้แก้โค้ดในขั้นนี้ (ขั้น 7 จะแก้ทีละข้อ)
+
+---
+
+## 2569-10-07 ขั้น 7 (ข้อที่ 1 จาก 4): แก้ตาม F-09 ใน specs/001-booking/rtm.md
+
+- คำสั่ง (เทียบเท่า): แก้ตาม F-09 ใน rtm.md แตะเฉพาะไฟล์ที่เกี่ยวข้อง ห้ามแก้ test ที่ชื่อขึ้นต้นด้วย test_TC_ แล้วรัน pytest -v
+- เหตุผล: ทีมตัดสิน (ตามเฉลยผู้สอนในหน้า week07) ว่า "แก้โค้ด: ของแถม อยู่ใน Out of scope (UC-02)"
+- แก้: ลบ endpoint `DELETE /bookings/{booking_id}` (`cancel_booking`) ออกจาก backend/app/booking/router.py และลบ `cancel_booking` ออกจาก backend/app/booking/service.py (เฉพาะส่วนที่ลบ ไม่มีบรรทัดอื่นเปลี่ยน; git diff มีแต่บรรทัดที่ลบ)
+- ผล `cd backend && pytest -v`: 7 passed ไม่มี test_TC_ ถูกแก้
+- grep "DELETE|cancel|delete" ใน app/ ไม่พบแล้ว
