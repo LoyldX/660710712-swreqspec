@@ -216,3 +216,11 @@
 - เหตุผล: ทีมตัดสิน (ตามเฉลยผู้สอนในหน้า week07) ว่า "แก้โค้ด": queue_no เป็นค่าว่างพร้อมคอมเมนต์ "รอ Q-02" ไม่ออกเลข A001 (สอดคล้อง plan ข้อ 3 ที่ให้ queue_no ว่างได้)
 - แก้เฉพาะ backend/app/booking/service.py: ลบ `next_queue_no` (รูปแบบ A001 รีเซ็ตรายวัน) และ import `func, select` ที่ไม่ได้ใช้แล้ว; ให้ `queue_no=None,  # รอ Q-02`; ปรับ docstring ของ create_booking
 - ผล `cd backend && pytest -v`: 7 passed ไม่มี test ที่ assert เลขคิวอยู่ (test_TC_BKG_01_1 ส่วนหมายเลขคิวเป็นคอมเมนต์ "รอ Q-02" อยู่แล้ว) ไม่ต้องแก้ test และไม่มี test_TC_ ถูกแก้
+
+---
+
+## 2569-10-07 ขั้น 7 (ข้อที่ 4 จาก 4): แก้ตาม F-01 ใน specs/001-booking/rtm.md
+
+- เหตุผล: ทีมตัดสิน (ตามเฉลยผู้สอนในหน้า week07) ว่า "เพิ่ม Q-03" และระหว่างรอคำตอบ เอาส่วนที่เดาออก = ไม่รับ national_id ใน request และไม่เขียนลง log (ตรงกับรายการที่ต้องเห็นของขั้น 7)
+- แก้เฉพาะ backend/app/booking/router.py: ลบฟิลด์ `national_id` ออกจาก `BookingRequest` และตัด `national_id` ออกจากข้อความ log (เหลือ slot และ hn)
+- ผล `cd backend && pytest -v`: 7 passed ไม่มี test_TC_ ถูกแก้; grep "national_id" ใน app/ ไม่พบ
