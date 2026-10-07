@@ -199,3 +199,12 @@
 - แก้: ลบ endpoint `DELETE /bookings/{booking_id}` (`cancel_booking`) ออกจาก backend/app/booking/router.py และลบ `cancel_booking` ออกจาก backend/app/booking/service.py (เฉพาะส่วนที่ลบ ไม่มีบรรทัดอื่นเปลี่ยน; git diff มีแต่บรรทัดที่ลบ)
 - ผล `cd backend && pytest -v`: 7 passed ไม่มี test_TC_ ถูกแก้
 - grep "DELETE|cancel|delete" ใน app/ ไม่พบแล้ว
+
+---
+
+## 2569-10-07 ขั้น 7 (ข้อที่ 2 จาก 4): แก้ตาม F-04 ใน specs/001-booking/rtm.md
+
+- เหตุผล: ทีมตัดสิน (ตามเฉลยผู้สอนในหน้า week07) ว่า "แก้โค้ด" เพราะ FR-BKG-01 พูดชัดว่า "ภายใน 30 วันข้างหน้า"
+- แก้: backend/app/slots/service.py บรรทัด 10 `DAYS_AHEAD = 14` เป็น `DAYS_AHEAD = 30` (บรรทัดเดียว)
+- ผล `cd backend && pytest -v`: 7 passed ไม่มี test_TC_ ถูกแก้
+- ข้อสังเกตส่งทีม (ไม่ได้แก้): การค้นใช้ `Slot.slot_date <= start + DAYS_AHEAD` (รวมวันที่ 30) ซึ่งนับวันเริ่มต้นด้วยเป็น 31 วัน ถ้าทีมต้องการนับ "30 วัน" แบบไม่รวมวันที่ 31 ควรถามผู้ใช้ ไม่ได้ตัดสินแทน
