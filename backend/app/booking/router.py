@@ -1,8 +1,9 @@
 # API จองคิว POST /bookings (T-03)
-# รองรับ FR-BKG-04, IF-IDP-01
+# รองรับ FR-BKG-04, FR-BKG-02, IF-IDP-01
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -24,6 +25,13 @@ def create_booking(req: BookingRequest, hn: str = Depends(get_verified_hn), db: 
     logger.info("booking request slot=%s hn=%s", req.slot_id, hn)
     try:
         booking = service.create_booking(db, hn=hn, slot_id=req.slot_id)
+    except service.DuplicateBookingError as dup:
+        # ปฏิเสธ และคืนการจองเดิมกลับไป (FR-BKG-02)
+        e = dup.existing
+        return JSONResponse(
+            status_code=409,
+            content={"detail": "มีคิวที่ยังไม่ได้ใช้ในวันเดียวกันแล้ว", "booking_id": e.id, "slot_id": e.slot_id, "queue_no": e.queue_no},
+        )
     except service.SlotFullError:
         raise HTTPException(status_code=409, detail="ช่วงเวลาเต็ม")
     except ValueError as e:
