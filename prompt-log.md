@@ -208,3 +208,11 @@
 - แก้: backend/app/slots/service.py บรรทัด 10 `DAYS_AHEAD = 14` เป็น `DAYS_AHEAD = 30` (บรรทัดเดียว)
 - ผล `cd backend && pytest -v`: 7 passed ไม่มี test_TC_ ถูกแก้
 - ข้อสังเกตส่งทีม (ไม่ได้แก้): การค้นใช้ `Slot.slot_date <= start + DAYS_AHEAD` (รวมวันที่ 30) ซึ่งนับวันเริ่มต้นด้วยเป็น 31 วัน ถ้าทีมต้องการนับ "30 วัน" แบบไม่รวมวันที่ 31 ควรถามผู้ใช้ ไม่ได้ตัดสินแทน
+
+---
+
+## 2569-10-07 ขั้น 7 (ข้อที่ 3 จาก 4): แก้ตาม F-03 ใน specs/001-booking/rtm.md
+
+- เหตุผล: ทีมตัดสิน (ตามเฉลยผู้สอนในหน้า week07) ว่า "แก้โค้ด": queue_no เป็นค่าว่างพร้อมคอมเมนต์ "รอ Q-02" ไม่ออกเลข A001 (สอดคล้อง plan ข้อ 3 ที่ให้ queue_no ว่างได้)
+- แก้เฉพาะ backend/app/booking/service.py: ลบ `next_queue_no` (รูปแบบ A001 รีเซ็ตรายวัน) และ import `func, select` ที่ไม่ได้ใช้แล้ว; ให้ `queue_no=None,  # รอ Q-02`; ปรับ docstring ของ create_booking
+- ผล `cd backend && pytest -v`: 7 passed ไม่มี test ที่ assert เลขคิวอยู่ (test_TC_BKG_01_1 ส่วนหมายเลขคิวเป็นคอมเมนต์ "รอ Q-02" อยู่แล้ว) ไม่ต้องแก้ test และไม่มี test_TC_ ถูกแก้
